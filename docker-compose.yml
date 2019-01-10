@@ -1,0 +1,30 @@
+# docker-compose MongoDB part
+# Password and user change needed
+version: '3.1'
+
+services:
+  web:
+    build: . 
+    container_name: phpserver
+    ports: 
+      - 80:80
+    volumes: 
+      - ./WWC/www:/var/www/html
+  mongo:
+    image: mongo:4.1
+    container_name: "MongoDB"
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - ./Data:/data/db
+  mongo-express:
+    image: mongo-express
+    container_name: MongoDB-Express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
