@@ -1,6 +1,46 @@
-version: '3'
+version: '3.1'
 
 services:
+  nginx:
+    image: evild/alpine-nginx:1.9.15-openssl
+    container_name: nginx_docker
+    links:
+      - php
+    volumes:
+      - ./app:/var/www/html/:ro
+      - ./docker/nginx/conf/nginx.conf:/etc/nginx/conf/nginx.conf:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+    ports:
+      - 80:80
+      - 443:443
+  php:
+    image: hayko18/php7-mongo
+    container_name: php_docker
+    volumes:
+      - ./app:/var/www/html
+    depends_on:
+      - mongo
+    links:
+      - mongo
+  mongo:
+    image: mongo:4.1
+    container_name: mongodb_docker
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - ./Data:/data/db
+  mongo-express:
+    image: mongo-express
+    container_name: MongoDB-Express_docker
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      
   mysql:
     build: ./mysql
     container_name: mysql
@@ -8,5 +48,3 @@ services:
       - 3306:3306
     volumes:
       - ./mysql/data:/var/lib/mysql
-
-
