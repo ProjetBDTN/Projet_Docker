@@ -3,25 +3,38 @@ version: '3.1'
 services:
   nginx:
     image: evild/alpine-nginx:1.9.15-openssl
-    container_name: nginx_docker
-    links:
+    container_name: nginx
+    depends_on:
       - php
     volumes:
       - ./app:/var/www/html/:ro
       - ./docker/nginx/conf/nginx.conf:/etc/nginx/conf/nginx.conf:ro
       - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./conf.d:/etc/nginx/conf.d
     ports:
       - 80:80
       - 443:443
   php:
+    build: ./php-mysql
     image: hayko18/php7-mongo
-    container_name: php_docker
+    container_name: php
     volumes:
       - ./app:/var/www/html
+    ports:
+      - "9000:9000"
     depends_on:
       - mongo
+      - mysql
     links:
       - mongo
+      - mysql
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: '123'
+      MYSQL_USER: 'wwc'
+      MYSQL_PASSWORD: '123' 
+  
   mongo:
     image: mongo:4.1
     container_name: mongodb_docker
@@ -31,12 +44,44 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
     volumes:
       - ./Data:/data/db
+
   mongo-express:
     image: mongo-express
-    container_name: MongoDB-Express_docker
+    container_name: MongoDB-Express
     restart: always
     ports:
       - 8081:8081
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: root
       ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      
+  mysql:
+    build: ./mysql
+    image: mysql:5.7
+    container_name: mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: 'wwc'
+      MYSQL_ROOT_PASSWORD: "123"
+      MYSQL_USER: "wwc"
+      MYSQL_PASSWORD: "123"
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: '123'
+      MYSQL_USER: 'wwc'
+      MYSQL_PASSWORD: '123'   
+    links:
+      - mysql:db
+    ports:
+      - 8000:80
+    depends_on:
+      - nginx
+      - mysql

@@ -1,0 +1,12 @@
+FROM mysql
+
+
+RUN chown -R mysql:root var/lib/mysql/
+
+ENV MYSQL_DATABASE=wwc
+ENV MYSQL_USER="wwc"
+ENV MYSQL_PASSWORD="123"
+ENV MYSQL_ROOT_PASSWORD="123"
+
+CMD ["mysqld"]
+EXPOSE 3306
