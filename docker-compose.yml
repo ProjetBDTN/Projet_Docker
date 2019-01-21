@@ -37,7 +37,7 @@ services:
   
   mongo:
     image: mongo:4.1
-    container_name: mongodb
+    container_name: mongodb_docker
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: root

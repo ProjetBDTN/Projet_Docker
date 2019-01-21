@@ -1,6 +1,6 @@
 <?php
 function connectMySQL() {
-    $host='localhost:33060';
+    $host='localhost:3306';
     $bdd='wwc';
     $user='wwc'; // 'root' pendant le développement, selon votre projet pour le serveur de l'école:w
     $pass='123'; // 'root' pour MAMP, '' pour EasyPHP, selon votre projet pour le serveur de l'école
